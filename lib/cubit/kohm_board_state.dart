@@ -17,3 +17,12 @@ class KohmBoardWeatherDataLoadedState extends KohmBoardState {
   @override
   List<Object> get props => [weatherData];
 }
+
+class KohmBoardTemperatureLoadedState extends KohmBoardState {
+  final double temperature;
+
+  KohmBoardTemperatureLoadedState(this.temperature);
+
+  @override
+  List<Object> get props => [temperature];
+}

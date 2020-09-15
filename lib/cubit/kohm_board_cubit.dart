@@ -15,4 +15,13 @@ class KohmBoardCubit extends Cubit<KohmBoardState> {
       await Future.delayed(Duration(hours: 1));
     }
   }
+
+
+  Future<void> getCurrentTemperature() async {
+    while (true) {
+      emit(KohmBoardTemperatureLoadedState(await repository.getCurrentTemperature()));
+      await Future.delayed(Duration(hours: 1));
+    }
+  }
+
 }

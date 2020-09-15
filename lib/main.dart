@@ -4,6 +4,7 @@ import 'package:dashboard/cubit/kohm_board_cubit.dart';
 import 'package:dashboard/graphql_setup.dart';
 import 'package:dashboard/services/remote_data_repository.dart';
 import 'package:dashboard/widgets/clock.dart';
+import 'package:dashboard/widgets/current_temperature.dart';
 import 'package:dashboard/widgets/dashboard_tile_text.dart';
 import 'package:dashboard/widgets/train_schedule.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +56,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    context.bloc<KohmBoardCubit>().getWeatherData();
+    var bloc = context.bloc<KohmBoardCubit>();
+    bloc.getWeatherData();
+    bloc.getCurrentTemperature();
   }
 
   @override
@@ -96,14 +99,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       children: [
                         Clock(),
+                        SizedBox(
+                          width: 50,
+                        ),
+                        BlocBuilder<KohmBoardCubit, KohmBoardState>(
+                            builder: (context, state) {
+                          if (state is KohmBoardTemperatureLoadedState) {
+                            return TemperatureWidget(
+                                temperature: state.temperature);
+                          } else {
+                            return Text("Error");
+                          }
+                        })
                       ],
+                      crossAxisAlignment: CrossAxisAlignment.start,
                     ),
                   ),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                    child: GridView.count(
+                      crossAxisCount:
+                          MediaQuery.of(context).size.width <= 500 ? 1 : 2,
                       children: [
+                        TrainTableToggle(),
                         BlocBuilder<KohmBoardCubit, KohmBoardState>(
                             builder: (context, state) {
                           if (state is KohmBoardWeatherDataLoadedState) {
@@ -121,11 +138,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           } else {
                             return Text("Trouble loading weather data");
                           }
-                        }),
-                        SizedBox(
-                          width: 32.0,
-                        ),
-                        TrainTableToggle()
+                        })
                       ],
                     ),
                   ),
